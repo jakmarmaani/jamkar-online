@@ -38,6 +38,7 @@ ok('Lifetime entitlement comes from Supabase family account',/lifetime_unlocked/
 ok('Revolut checkout invoked through backend',/backend\.createCheckout\(\)/.test(cloud));
 ok('Parent password minimum is 8',/minlength="8"/.test(account)&&/pass\.length<8/.test(account));
 ok('Parent sign out implemented',/parentSignOut/.test(account)&&/backend\.signOut\(\)/.test(account));
+ok('Parent active child state syncs after family load and signout',/state\.activeProfile=names\[0\]/.test(account)&&/state\.activeProfile='Explorer'/.test(account));
 ok('Password recovery implemented',/resetPasswordForEmail/.test(backend)&&/PASSWORD_RECOVERY/.test(recovery)&&/updatePassword/.test(backend));
 ok('Password recovery hides while signed in',/forgot\.hidden=!!backend\.state\?\.user/.test(recovery));
 ok('Two child profile fields only',index.includes('Child profile 1')&&index.includes('Child profile 2')&&!index.includes('Child profile 3'));
@@ -54,6 +55,7 @@ ok('Persistent builder and recovery scripts loaded',index.includes('persistent-b
 ok('Shared completion API loaded before builder',index.indexOf('completion-api.js')>index.indexOf('enhancements.js')&&index.indexOf('completion-api.js')<index.indexOf('persistent-builder.js'));
 ok('Shared completion handles milestones and world mastery',/JamKarCompleteLevel/.test(completion)&&/World Master/.test(completion)&&/Level 20 Pathfinder/.test(completion));
 ok('Cloud achievements load and save',/loadAchievements/.test(cloud)&&/saveAchievement/.test(cloud)&&/jamkar:achievement/.test(cloud));
+ok('3D mission events sync into child achievement storage',/jamkar:3dmission/.test(navigation)&&/mission3d\|/.test(cloud)&&/merge3DMissions/.test(cloud));
 ok('Progression system loaded',index.includes('progression.js')&&index.includes('progression.css'));
 ok('Progression has six mastery tiers',['Explorer','Adventurer','Pathfinder','Master','Champion','Legend'].every(x=>progression.includes(`name:'${x}'`)));
 ok('Progression awards XP stars streaks badges',/prog\.xp\+=/.test(progression)&&/prog\.stars\+=/.test(progression)&&/prog\.streak=/.test(progression)&&/addBadge/.test(progression));
