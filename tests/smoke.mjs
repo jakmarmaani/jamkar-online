@@ -42,7 +42,7 @@ ok('Revolut checkout invoked through backend',/backend\.createCheckout\(\)/.test
 ok('Parent password minimum is 8',/minlength="8"/.test(account)&&/pass\.length<8/.test(account));
 ok('Parent sign out implemented',/parentSignOut/.test(account)&&/backend\.signOut\(\)/.test(account));
 ok('Parent active child state syncs after family load and signout',/state\.activeProfile=names\[0\]/.test(account)&&/state\.activeProfile='Explorer'/.test(account));
-ok('Persistent child profile state enabled',/jamkar_profile/.test(home)&&/keepChildSession/.test(home));
+ok('Persistent child profile state enabled locally and in cloud',/jamkar_profile/.test(home)&&/keepChildSession/.test(home)&&/last_active_slot/.test(backend)&&/setActiveChildSlot/.test(cloud));
 ok('Password recovery implemented',/resetPasswordForEmail/.test(backend)&&/PASSWORD_RECOVERY/.test(recovery)&&/updatePassword/.test(backend));
 ok('Password recovery hides while signed in',/forgot\.hidden=!!backend\.state\?\.user/.test(recovery));
 ok('Two child profile fields only',index.includes('Child profile 1')&&index.includes('Child profile 2')&&!index.includes('Child profile 3'));
@@ -67,7 +67,7 @@ ok('Companion evolution implemented',['Spark Egg','Spark Cub','Quest Buddy','Sta
 ok('Expanded challenges loaded after free game layer',index.indexOf('expanded-games.js')>index.indexOf('free-games.js'));
 ok('Child-first light theme loaded last',index.includes('sunny-theme.css')&&index.includes('home-experience.js')&&/cardFloat/.test(sunny));
 ok('Music control implemented',/AudioContext/.test(home)&&/musicToggle/.test(home));
-ok('World-specific game themes implemented',['ocean','space','dino','ancient','nature','future'].every(x=>sunny.includes(`data-world-theme=\"${x}\"`)));
+ok('All 24 worlds have dedicated palettes',allWorldNames.every(n=>home.includes(`'${n}':[`))&&home.includes('paletteFor')&&sunny.includes('data-world-theme="custom"')&&sunny.includes('--world-a')&&sunny.includes('--world-b'));
 ok('Admin page and secure RPC controls wired',adminHtml.includes('JamKar Admin')&&/admin_get_overview/.test(admin)&&/admin_set_family_unlock/.test(admin));
 ok('Mobile/kid navigation polish loaded',index.includes('ui-polish.js')&&index.includes('polish.css'));
 ok('Create/My Worlds navigation wired',polish.includes('openBuilder')&&polish.includes('openMyWorlds'));
