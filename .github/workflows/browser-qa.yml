@@ -1,0 +1,26 @@
+name: JamKar Browser QA
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start static site
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/jamkar-http.log 2>&1 &
+          echo $! > /tmp/jamkar-http.pid
+          sleep 2
+      - name: Run browser smoke
+        run: node tests/browser-smoke.mjs
