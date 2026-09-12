@@ -1,6 +1,8 @@
-import { chromium } from 'playwright';
+import { chromium, webkit } from 'playwright';
 
-const browser=await chromium.launch({headless:true});
+const browserName=(process.env.BROWSER||'chromium').toLowerCase();
+const browserType=browserName==='webkit'?webkit:chromium;
+const browser=await browserType.launch({headless:true});
 async function desktopSmoke(){
  const page=await browser.newPage({viewport:{width:1280,height:900}}),errors=[];page.on('pageerror',e=>errors.push(String(e)));
  await page.addInitScript(()=>localStorage.setItem('jamkar_paid','yes'));
@@ -17,7 +19,7 @@ async function desktopSmoke(){
  if(await page.locator('#child3').count())throw new Error('Unexpected third child profile field');
  if(await page.locator('#parentPassword').getAttribute('minlength')!=='8')throw new Error('Password minimum is not 8');
  await page.locator('#closeAccount').click();await page.locator('#joinHero').click();await page.waitForSelector('#accountModal.open');
- if(errors.length)throw new Error('Desktop page errors: '+errors.join(' | '));await page.close();
+ if(errors.length)throw new Error(`${browserName} desktop page errors: `+errors.join(' | '));await page.close();
 }
 async function mobileSmoke(){
  const page=await browser.newPage({viewport:{width:390,height:844},isMobile:true,hasTouch:true}),errors=[];page.on('pageerror',e=>errors.push(String(e)));
@@ -29,7 +31,7 @@ async function mobileSmoke(){
  const modalOverflow=await page.evaluate(()=>document.querySelector('#worldModal .modalCard')?.scrollWidth>window.innerWidth+2);if(modalOverflow)throw new Error('World modal overflows mobile viewport');
  await page.locator('#closeWorld').click();await page.locator('.mobileDock [data-dock="parent"]').click();await page.waitForSelector('#accountModal.open');
  const accountOverflow=await page.evaluate(()=>document.querySelector('#accountModal .modalCard')?.scrollWidth>window.innerWidth+2);if(accountOverflow)throw new Error('Parent account modal overflows mobile viewport');
- if(errors.length)throw new Error('Mobile page errors: '+errors.join(' | '));await page.close();
+ if(errors.length)throw new Error(`${browserName} mobile page errors: `+errors.join(' | '));await page.close();
 }
 await desktopSmoke();await mobileSmoke();await browser.close();
-console.log('Browser smoke passed: desktop/mobile runtime, paywall tamper resistance, gameplay, navigation and parent account.');
+console.log(`${browserName} browser smoke passed: desktop/mobile runtime, paywall tamper resistance, gameplay, navigation and parent account.`);
