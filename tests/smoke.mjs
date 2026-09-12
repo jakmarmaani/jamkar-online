@@ -53,6 +53,7 @@ ok('Persistent builder has civilisation needs',/civStats/.test(builder)&&/Era mi
 ok('Persistent builder and recovery scripts loaded',index.includes('persistent-builder.js')&&index.includes('auth-recovery.js'));
 ok('Shared completion API loaded before builder',index.indexOf('completion-api.js')>index.indexOf('enhancements.js')&&index.indexOf('completion-api.js')<index.indexOf('persistent-builder.js'));
 ok('Shared completion handles milestones and world mastery',/JamKarCompleteLevel/.test(completion)&&/World Master/.test(completion)&&/Level 20 Pathfinder/.test(completion));
+ok('Cloud achievements load and save',/loadAchievements/.test(cloud)&&/saveAchievement/.test(cloud)&&/jamkar:achievement/.test(cloud));
 ok('Progression system loaded',index.includes('progression.js')&&index.includes('progression.css'));
 ok('Progression has six mastery tiers',['Explorer','Adventurer','Pathfinder','Master','Champion','Legend'].every(x=>progression.includes(`name:'${x}'`)));
 ok('Progression awards XP stars streaks badges',/prog\.xp\+=/.test(progression)&&/prog\.stars\+=/.test(progression)&&/prog\.streak=/.test(progression)&&/addBadge/.test(progression));
