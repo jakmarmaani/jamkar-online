@@ -1,0 +1,28 @@
+name: JamKar QA
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check JavaScript syntax
+        run: |
+          node --check app.js
+          node --check enhancements.js
+          node --check free-games.js
+          node --check dashboard.js
+          node --check account.js
+          node --check backend.js
+          node --check cloud-sync.js
+          node --check ui-polish.js
+      - name: Run production smoke checks
+        run: node tests/smoke.mjs
