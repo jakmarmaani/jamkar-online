@@ -33,6 +33,7 @@ jobs:
           node --check ui-polish.js
           node --check game-feel.js
           node --check webgl-world.js
+          node --check world-navigation.js
           node --check webgl-environments.js
           node --check webgl-characters.js
           node --check progression.js
