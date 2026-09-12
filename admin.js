@@ -7,6 +7,7 @@ async function authorised(){await waitBackend();await backend.refreshUser();retu
 async function rpc(name,args={}){const {data,error}=await backend.state.client.rpc(name,args);if(error)throw error;return data}
 function metric(label,value){return `<div class="metric"><strong>${Number(value||0).toLocaleString()}</strong><span>${label}</span></div>`}
 async function sendMagic(){const status=$('#gateStatus');status.textContent='Sending secure admin link…';await waitBackend();const {error}=await backend.state.client.auth.signInWithOtp({email:ADMIN_EMAIL,options:{emailRedirectTo:'https://jamkar.online/admin.html',shouldCreateUser:true}});if(error)throw error;status.textContent='Secure sign-in link sent to '+ADMIN_EMAIL+'. Open it on this device to activate the administrator account.'}
+async function recoverMisroutedAuth(){if(location.hostname!=='jamkar.online')return false;return false}
 async function createFamily(){const s=$('#createStatus');s.textContent='Creating family…';const payload={email:$('#newParentEmail').value.trim(),child1:$('#newChild1').value.trim(),child2:$('#newChild2').value.trim(),unlock:$('#newUnlock').checked};const {data,error}=await backend.state.client.functions.invoke('admin-create-family',{body:payload});if(error)throw error;if(data?.error)throw new Error(data.error);s.textContent='Family created and secure invite sent.';$('#newParentEmail').value='';$('#newChild1').value='';$('#newChild2').value='';await load()}
 async function load(){
  const gate=$('#gate'),app=$('#adminApp'),status=$('#gateStatus');status.textContent='Checking access…';
@@ -21,5 +22,5 @@ async function load(){
 $('#adminMagic').onclick=()=>sendMagic().catch(e=>$('#gateStatus').textContent=e.message);$('#retry').onclick=()=>load().catch(e=>$('#gateStatus').textContent=e.message);$('#refresh').onclick=()=>load().catch(console.error);$('#createFamily').onclick=()=>createFamily().catch(e=>$('#createStatus').textContent=e.message);
 $('#adminSignOut').onclick=async()=>{await backend.state.client.auth.signOut();location.reload()};
 $('#saveSettings').onclick=async()=>{const s=$('#settingsStatus');s.textContent='Saving…';try{await rpc('admin_update_settings',{p_maintenance:$('#maintenance').checked,p_announcement:$('#announcement').value.trim()});s.textContent='Saved.'}catch(e){s.textContent=e.message}};
-window.addEventListener('jamkar:backend',()=>load().catch(console.error));window.addEventListener('jamkar:auth',()=>load().catch(console.error));load().catch(e=>$('#gateStatus').textContent=e.message);
+window.addEventListener('jamkar:backend',()=>load().catch(console.error));window.addEventListener('jamkar:auth',()=>load().catch(console.error));recoverMisroutedAuth();load().catch(e=>$('#gateStatus').textContent=e.message);
 })();
