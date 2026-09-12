@@ -1,6 +1,7 @@
 /* JamKar Experience V2: child-first launcher + immersive full-screen gameplay */
 :root{--jk-ink:#17395f;--jk-muted:#63809e;--jk-card:#fff;--jk-line:#dceaf4;--jk-shadow:0 18px 50px rgba(29,71,108,.14)}
 body{background:linear-gradient(180deg,#f7fcff 0,#eefaff 45%,#fff9e9 100%);color:var(--jk-ink)}
+[hidden]{display:none!important}
 .top{position:sticky;top:0;z-index:60;background:rgba(255,255,255,.92);backdrop-filter:blur(18px);border-bottom:1px solid var(--jk-line)}
 .top .nav button,.sideNav button{transition:transform .16s ease,background .16s ease,color .16s ease,box-shadow .16s ease}
 .top .nav button:hover,.sideNav button:hover{transform:translateY(-2px)}
