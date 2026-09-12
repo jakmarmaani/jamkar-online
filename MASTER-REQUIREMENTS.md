@@ -24,6 +24,7 @@ Last reviewed: 12 September 2026
 - [x] 3D mission completion persists per child profile, syncs through the signed-in family account and visibly changes the 3D scene.
 - [x] Achievements sync through the signed-in child profile.
 - [x] Achievements, level milestones, XP, stars, streaks, badges and evolving companion progression.
+- [x] Base quizzes, advanced games and persistent builder use the shared completion/mastery flow so Level 30 completion and milestones are consistent.
 - [x] Reduced-motion support and keyboard-accessible game controls where applicable.
 
 ## Parent, child safety and privacy
@@ -34,6 +35,7 @@ Last reviewed: 12 September 2026
 - [x] Minimal child information: no DOB, school, address, phone number or full legal name required.
 - [x] Parent-managed child profiles.
 - [x] Parent sign-in, sign-out and password recovery.
+- [x] Duplicate child usernames within the same family are blocked with a clear error, while global username uniqueness remains database-enforced.
 - [x] Privacy, child-safety, terms and help notices.
 
 ## Backend and payments
@@ -49,15 +51,19 @@ Last reviewed: 12 September 2026
 ## Quality assurance
 - [x] JavaScript syntax checks.
 - [x] Static product/security invariant smoke tests.
-- [x] Headless Chromium desktop runtime smoke tests.
-- [x] Headless Chromium mobile viewport/runtime checks.
+- [x] Headless Chromium desktop and mobile runtime smoke tests.
+- [x] Headless WebKit desktop and mobile runtime smoke tests as a Safari-engine compatibility check.
 - [x] Browser QA verifies Level 4 is locked, paid worlds cannot open without verified entitlement, and a forged legacy browser paid flag does not unlock access.
+- [x] Current Chromium and WebKit browser smoke jobs pass.
 - [x] GitHub Pages deployment automation.
-- [ ] Manual Safari/iOS/Android device testing is not automated in this repository.
+- [ ] Physical-device testing on real iPhone/iPad/Android hardware still requires access to those devices; it cannot be proven by repository automation alone.
 
 ## Hosting
 - [x] `jamkar.online` custom domain configured for the GitHub Pages deployment.
-- [ ] HTTPS certificate status must be confirmed externally in GitHub Pages/domain settings; certificate provisioning cannot be established from repository source code alone.
+- [ ] HTTPS certificate status must be confirmed externally in GitHub Pages/domain settings; certificate provisioning cannot be established from repository source code alone in the current tool environment.
 
 ## Known platform limitation
 Supabase leaked-password protection remains unavailable on the current Free plan. Minimum password length and secure password/email-change controls are enabled, but the paid leaked-password service remains a platform-plan limitation.
+
+## External-only items remaining
+The codebase and automated master requirements are implemented. The remaining unchecked items are not unfinished code: (1) a real paid production transaction, which the owner has chosen not to perform, (2) physical-device checks requiring actual devices, and (3) confirming the custom-domain HTTPS certificate from the hosting/domain control plane. These should not be marked complete without real evidence.
