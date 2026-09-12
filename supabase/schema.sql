@@ -1,5 +1,5 @@
--- JamKar Online production schema scaffold
--- Run only in a dedicated Supabase project.
+-- JamKar Online production schema
+-- Run only in the dedicated JamKar Online Supabase project.
 -- Auth passwords remain in Supabase Auth and are never stored in these tables.
 
 create table if not exists public.parent_accounts (
@@ -32,6 +32,13 @@ create table if not exists public.game_progress (
   primary key(child_profile_id, world_key)
 );
 
+create table if not exists public.child_achievements (
+  child_profile_id uuid not null references public.child_profiles(id) on delete cascade,
+  achievement_key text not null check (char_length(achievement_key) between 1 and 100),
+  earned_at timestamptz not null default now(),
+  primary key(child_profile_id, achievement_key)
+);
+
 create table if not exists public.purchases (
   id uuid primary key default gen_random_uuid(),
   parent_id uuid not null references auth.users(id) on delete cascade,
@@ -47,17 +54,20 @@ create table if not exists public.purchases (
 alter table public.parent_accounts enable row level security;
 alter table public.child_profiles enable row level security;
 alter table public.game_progress enable row level security;
+alter table public.child_achievements enable row level security;
 alter table public.purchases enable row level security;
 
 -- Current Supabase projects may require explicit Data API grants.
 revoke all on public.parent_accounts from anon, authenticated;
 revoke all on public.child_profiles from anon, authenticated;
 revoke all on public.game_progress from anon, authenticated;
+revoke all on public.child_achievements from anon, authenticated;
 revoke all on public.purchases from anon, authenticated;
 
 grant select on public.parent_accounts to authenticated;
 grant select, insert, update, delete on public.child_profiles to authenticated;
 grant select, insert, update, delete on public.game_progress to authenticated;
+grant select, insert, delete on public.child_achievements to authenticated;
 grant select on public.purchases to authenticated;
 
 -- Parent account row is created automatically when Auth creates a user.
@@ -144,6 +154,30 @@ with check (exists (
 
 drop policy if exists "parent deletes child progress" on public.game_progress;
 create policy "parent deletes child progress" on public.game_progress
+for delete to authenticated
+using (exists (
+  select 1 from public.child_profiles cp
+  where cp.id = child_profile_id and cp.parent_id = (select auth.uid())
+));
+
+drop policy if exists "parent reads child achievements" on public.child_achievements;
+create policy "parent reads child achievements" on public.child_achievements
+for select to authenticated
+using (exists (
+  select 1 from public.child_profiles cp
+  where cp.id = child_profile_id and cp.parent_id = (select auth.uid())
+));
+
+drop policy if exists "parent inserts child achievements" on public.child_achievements;
+create policy "parent inserts child achievements" on public.child_achievements
+for insert to authenticated
+with check (exists (
+  select 1 from public.child_profiles cp
+  where cp.id = child_profile_id and cp.parent_id = (select auth.uid())
+));
+
+drop policy if exists "parent deletes child achievements" on public.child_achievements;
+create policy "parent deletes child achievements" on public.child_achievements
 for delete to authenticated
 using (exists (
   select 1 from public.child_profiles cp
