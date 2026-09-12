@@ -16,7 +16,9 @@ function setMode(next){mode=next;if(signedIn()){syncSessionUi();return}document.
 document.querySelectorAll('.accountTab').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
 document.querySelectorAll('.avatarChoice').forEach(b=>b.onclick=()=>{selectedAvatar=b.dataset.avatar;document.querySelectorAll('.avatarChoice').forEach(x=>x.classList.remove('active'));b.classList.add('active')});
 function validUsername(v){return !v||/^[A-Za-z0-9 _-]{3,18}$/.test(v)}
-async function saveCloudChildren(){const p1=child1.value.trim();const p2=child2.value.trim();if(!p1)throw new Error('Enter the first child username.');if(!validUsername(p1)||!validUsername(p2))throw new Error('Child usernames must be 3–18 characters using letters, numbers, spaces, _ or -.');await backend.saveChild(1,p1,selectedAvatar);if(p2)await backend.saveChild(2,p2,selectedAvatar);else await backend.deleteChild(2);localStorage.setItem('jamkar_profiles',JSON.stringify([p1,p2].filter(Boolean)));localStorage.setItem('jamkar_avatar',selectedAvatar)}
+function validateChildren(){const p1=child1.value.trim(),p2=child2.value.trim();if(!p1)throw new Error('Enter the first child username.');if(!validUsername(p1)||!validUsername(p2))throw new Error('Child usernames must be 3–18 characters using letters, numbers, spaces, _ or -.');if(p2&&p1.toLowerCase()===p2.toLowerCase())throw new Error('The two child profiles need different usernames.');return[p1,p2]}
+function friendlyError(err){const msg=err?.message||'';if(/duplicate key|unique constraint|child_profiles_username/i.test(msg))return new Error('That child username is already in use. Please choose a different username.');return err}
+async function saveCloudChildren(){const[p1,p2]=validateChildren();try{await backend.saveChild(1,p1,selectedAvatar);if(p2)await backend.saveChild(2,p2,selectedAvatar);else await backend.deleteChild(2)}catch(err){throw friendlyError(err)}localStorage.setItem('jamkar_profiles',JSON.stringify([p1,p2].filter(Boolean)));localStorage.setItem('jamkar_avatar',selectedAvatar)}
 async function hydrateFamily(){if(!cloud()||!backend.state.user){syncSessionUi();return}const family=await backend.getFamily();const children=family?.children||[];child1.value=children.find(c=>c.slot===1)?.username||'';child2.value=children.find(c=>c.slot===2)?.username||'';const names=children.map(c=>c.username);if(names.length){localStorage.setItem('jamkar_profiles',JSON.stringify(names));if(!names.includes(state.activeProfile))state.activeProfile=names[0]||'Explorer';save();renderStats();renderWorlds()}if(typeof loadProfiles==='function')loadProfiles();syncSessionUi();window.dispatchEvent(new CustomEvent('jamkar:family',{detail:family}))}
 save.onclick=async()=>{status('');save.disabled=true;try{
  if(cloud()){
@@ -30,11 +32,9 @@ save.onclick=async()=>{status('');save.disabled=true;try{
      const {error}=await backend.signIn(e,pass);if(error)throw error;await backend.refreshUser();await hydrateFamily();status('Signed in securely. Your family profiles are loaded.',true);toast('Parent signed in')
    }
  }else{
-   const p1=child1.value.trim()||'Explorer',p2=child2.value.trim();localStorage.setItem('jamkar_profiles',JSON.stringify([p1,p2].filter(Boolean)));localStorage.setItem('jamkar_avatar',selectedAvatar);status('Demo profile saved on this device. Secure cloud authentication is currently unavailable.',true);toast('Family profile saved')
+   const[p1,p2]=validateChildren();localStorage.setItem('jamkar_profiles',JSON.stringify([p1,p2].filter(Boolean)));localStorage.setItem('jamkar_avatar',selectedAvatar);status('Profile saved on this device. Secure cloud authentication is currently unavailable.',true);toast('Family profile saved')
  }
-}catch(err){console.error(err);status(err?.message||'Could not complete that action. Please try again.')}finally{save.disabled=false}};
+}catch(err){console.error(err);status(friendlyError(err)?.message||'Could not complete that action. Please try again.')}finally{save.disabled=false}};
 document.querySelector('#parentSignOut').onclick=async()=>{try{await backend.signOut();localStorage.removeItem('jamkar_profiles');localStorage.removeItem('jamkar_profile');state.paid=false;state.activeProfile='Explorer';save();child1.value='';child2.value='';email.value='';status('Signed out securely.',true);syncSessionUi();if(typeof loadProfiles==='function')loadProfiles();renderStats();renderWorlds();toast('Parent signed out')}catch(err){console.error(err);status('Could not sign out. Please try again.')}};
-window.addEventListener('jamkar:auth',()=>hydrateFamily().catch(console.error));
-window.addEventListener('jamkar:backend',()=>hydrateFamily().catch(console.error));
-syncSessionUi();if(backend?.state?.user)hydrateFamily().catch(console.error);
+window.addEventListener('jamkar:auth',()=>hydrateFamily().catch(console.error));window.addEventListener('jamkar:backend',()=>hydrateFamily().catch(console.error));syncSessionUi();if(backend?.state?.user)hydrateFamily().catch(console.error);
 })();
