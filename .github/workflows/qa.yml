@@ -32,6 +32,8 @@ jobs:
           node --check backend.js
           node --check cloud-sync.js
           node --check ui-polish.js
+          node --check home-experience.js
+          node --check admin.js
           node --check game-feel.js
           node --check webgl-world.js
           node --check world-navigation.js
