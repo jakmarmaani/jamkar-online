@@ -47,14 +47,12 @@ alter table public.child_profiles enable row level security;
 alter table public.game_progress enable row level security;
 alter table public.purchases enable row level security;
 
+-- Parents may read their entitlement state, but the public client cannot update it.
+-- Only trusted server-side code using the service role should write lifetime_unlocked
+-- or revolut_customer_ref after verifying payment state.
 create policy "parent reads own account" on public.parent_accounts
 for select to authenticated
 using ((select auth.uid()) = user_id);
-
-create policy "parent updates own non-payment account fields" on public.parent_accounts
-for update to authenticated
-using ((select auth.uid()) = user_id)
-with check ((select auth.uid()) = user_id);
 
 create policy "parent reads own child profiles" on public.child_profiles
 for select to authenticated
@@ -103,6 +101,6 @@ for select to authenticated
 using ((select auth.uid()) = parent_id);
 
 -- IMPORTANT:
--- Do not create INSERT/UPDATE policies for purchases or lifetime_unlocked from the public client.
+-- Do not create public INSERT/UPDATE policies for purchases or parent_accounts entitlement fields.
 -- A trusted server/Edge Function must create the Revolut order, verify Revolut's webhook,
 -- write the purchase status and set lifetime_unlocked=true only after verified completion.
