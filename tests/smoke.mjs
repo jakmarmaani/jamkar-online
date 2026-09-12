@@ -13,6 +13,10 @@ const backend=read('backend.js');
 const cloud=read('cloud-sync.js');
 const account=read('account.js');
 const polish=read('ui-polish.js');
+const home=read('home-experience.js');
+const admin=read('admin.js');
+const adminHtml=read('admin.html');
+const sunny=read('sunny-theme.css');
 const more=read('more-worlds.js');
 const progression=read('progression.js');
 const navigation=read('world-navigation.js');
@@ -21,7 +25,6 @@ const characters=read('webgl-characters.js');
 
 const checks=[];
 const ok=(name,cond)=>checks.push({name,cond:!!cond});
-
 const baseWorldNames=[...app.matchAll(/\{name:'([^']+)'/g)].map(m=>m[1]);
 const extraWorldNames=[...more.matchAll(/name:'([^']+)'/g)].map(m=>m[1]);
 const allWorldNames=[...baseWorldNames,...extraWorldNames];
@@ -39,10 +42,11 @@ ok('Revolut checkout invoked through backend',/backend\.createCheckout\(\)/.test
 ok('Parent password minimum is 8',/minlength="8"/.test(account)&&/pass\.length<8/.test(account));
 ok('Parent sign out implemented',/parentSignOut/.test(account)&&/backend\.signOut\(\)/.test(account));
 ok('Parent active child state syncs after family load and signout',/state\.activeProfile=names\[0\]/.test(account)&&/state\.activeProfile='Explorer'/.test(account));
+ok('Persistent child profile state enabled',/jamkar_profile/.test(home)&&/keepChildSession/.test(home));
 ok('Password recovery implemented',/resetPasswordForEmail/.test(backend)&&/PASSWORD_RECOVERY/.test(recovery)&&/updatePassword/.test(backend));
 ok('Password recovery hides while signed in',/forgot\.hidden=!!backend\.state\?\.user/.test(recovery));
 ok('Two child profile fields only',index.includes('Child profile 1')&&index.includes('Child profile 2')&&!index.includes('Child profile 3'));
-ok('No public chat safety copy present',index.includes('No public chat'));
+ok('Safety copy moved off the main page into Parent Area',!index.includes('No public chat')&&home.includes('No public chat')&&home.includes('moveSafetyToParent'));
 ok('Privacy and terms links present',index.includes('legal.html#privacy')&&index.includes('legal.html#terms'));
 ok('Five free mini-games implemented',['Dino Frontier','Deep Ocean','Ancient Worlds','Wild Planet','Deep Space'].every(n=>free.includes(`case'${n}'`)));
 ok('Advanced mini-games implemented',['Memory Islands','Code Crew','Eco Rescue','Time Builder','Sky Racers'].every(n=>extras.includes(`case'${n}'`)));
@@ -61,6 +65,10 @@ ok('Progression has six mastery tiers',['Explorer','Adventurer','Pathfinder','Ma
 ok('Progression awards XP stars streaks badges',/prog\.xp\+=/.test(progression)&&/prog\.stars\+=/.test(progression)&&/prog\.streak=/.test(progression)&&/addBadge/.test(progression));
 ok('Companion evolution implemented',['Spark Egg','Spark Cub','Quest Buddy','Star Hero','Legend Companion'].every(x=>progression.includes(x)));
 ok('Expanded challenges loaded after free game layer',index.indexOf('expanded-games.js')>index.indexOf('free-games.js'));
+ok('Child-first light theme loaded last',index.includes('sunny-theme.css')&&index.includes('home-experience.js')&&/cardFloat/.test(sunny));
+ok('Music control implemented',/AudioContext/.test(home)&&/musicToggle/.test(home));
+ok('World-specific game themes implemented',['ocean','space','dino','ancient','nature','future'].every(x=>sunny.includes(`data-world-theme=\"${x}\"`)));
+ok('Admin page and secure RPC controls wired',adminHtml.includes('JamKar Admin')&&/admin_get_overview/.test(admin)&&/admin_set_family_unlock/.test(admin));
 ok('Mobile/kid navigation polish loaded',index.includes('ui-polish.js')&&index.includes('polish.css'));
 ok('Create/My Worlds navigation wired',polish.includes('openBuilder')&&polish.includes('openMyWorlds'));
 ok('Native WebGL world and characters loaded',index.includes('webgl-world.js')&&index.includes('webgl-characters.js')&&/getContext\('webgl'/.test(characters));
