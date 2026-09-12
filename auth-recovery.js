@@ -1,0 +1,14 @@
+(()=>{
+const backend=window.JamKarBackend;if(!backend)return;
+const account=document.querySelector('#accountModal');if(!account)return;
+const email=account.querySelector('input[type="email"]');
+const tabs=account.querySelector('.accountTabs');
+if(tabs&&!document.querySelector('#forgotPassword'))tabs.insertAdjacentHTML('afterend','<button type="button" class="ghost forgotPassword" id="forgotPassword">Forgot password?</button>');
+const forgot=document.querySelector('#forgotPassword');
+const status=document.querySelector('#accountStatus');
+function message(text,ok=false){if(!status)return;status.className='accountStatus'+(ok?' ok':'');status.textContent=text}
+forgot?.addEventListener('click',async()=>{const value=(email?.value||'').trim();if(!/^\S+@\S+\.\S+$/.test(value)){message('Enter your parent email first, then choose Forgot password.');return}forgot.disabled=true;try{const {error}=await backend.resetPassword(value);if(error)throw error;message('Password reset email sent. Open the link in the parent inbox to choose a new password.',true)}catch(err){message(err?.message||'Could not send the password reset email.')}finally{forgot.disabled=false}});
+function openResetPanel(){account.classList.add('open');document.querySelector('#accountHeading').textContent='Choose a new parent password';let panel=document.querySelector('#passwordRecoveryPanel');if(!panel){panel=document.createElement('div');panel.id='passwordRecoveryPanel';panel.className='passwordRecoveryPanel';panel.innerHTML='<label>New password</label><input id="recoveryPassword" type="password" minlength="8" autocomplete="new-password" placeholder="At least 8 characters"><label>Confirm new password</label><input id="recoveryPassword2" type="password" minlength="8" autocomplete="new-password" placeholder="Repeat password"><button class="primary" id="saveRecoveryPassword">Save new password</button>';account.querySelector('.modalCard').insertBefore(panel,account.querySelector('.accountGrid'));document.querySelector('#saveRecoveryPassword').onclick=async()=>{const p=document.querySelector('#recoveryPassword').value,p2=document.querySelector('#recoveryPassword2').value;if(p.length<8){message('Password must contain at least 8 characters.');return}if(p!==p2){message('The two password entries do not match.');return}const btn=document.querySelector('#saveRecoveryPassword');btn.disabled=true;try{const {error}=await backend.updatePassword(p);if(error)throw error;message('Password updated successfully. You are signed in securely.',true);panel.remove()}catch(err){message(err?.message||'Could not update the password.')}finally{btn.disabled=false}}}
+}
+window.addEventListener('jamkar:auth',e=>{if(e.detail?.event==='PASSWORD_RECOVERY')openResetPanel()});
+})();
