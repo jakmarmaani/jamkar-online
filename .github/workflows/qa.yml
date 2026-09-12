@@ -20,8 +20,10 @@ jobs:
           node --check enhancements.js
           node --check free-games.js
           node --check expanded-games.js
+          node --check persistent-builder.js
           node --check dashboard.js
           node --check account.js
+          node --check auth-recovery.js
           node --check backend.js
           node --check cloud-sync.js
           node --check ui-polish.js
