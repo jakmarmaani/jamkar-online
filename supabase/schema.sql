@@ -17,9 +17,11 @@ create table if not exists public.child_profiles (
   username text not null check (char_length(username) between 3 and 18),
   avatar_key text not null default 'explorer',
   created_at timestamptz not null default now(),
-  unique(parent_id, slot),
-  unique(lower(username))
+  unique(parent_id, slot)
 );
+
+create unique index if not exists child_profiles_username_lower_uidx
+on public.child_profiles (lower(username));
 
 create table if not exists public.game_progress (
   child_profile_id uuid not null references public.child_profiles(id) on delete cascade,
