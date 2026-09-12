@@ -32,6 +32,7 @@ jobs:
           node --check cloud-sync.js
           node --check ui-polish.js
           node --check game-feel.js
+          node --check webgl-world.js
           node --check progression.js
       - name: Run production smoke checks
         run: node tests/smoke.mjs
