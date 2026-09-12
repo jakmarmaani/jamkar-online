@@ -14,34 +14,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check JavaScript syntax
+      - name: Check active JavaScript syntax
         run: |
           node --check app.js
-          node --check enhancements.js
-          node --check completion-api.js
-          node --check free-games.js
-          node --check expanded-games.js
-          node --check persistent-builder.js
-          node --check more-worlds.js
-          node --check advanced-games.js
-          node --check advanced-free-worlds.js
-          node --check late-game.js
           node --check dashboard.js
           node --check account.js
           node --check auth-recovery.js
           node --check backend.js
           node --check cloud-sync.js
-          node --check ui-polish.js
-          node --check home-experience.js
           node --check admin.js
-          node --check game-feel.js
-          node --check arcade-feel.js
-          node --check adventure-runtime.js
-          node --check experience-v2.js
-          node --check webgl-world.js
-          node --check world-navigation.js
-          node --check webgl-environments.js
-          node --check webgl-characters.js
-          node --check progression.js
       - name: Run production smoke checks
         run: node tests/smoke.mjs
