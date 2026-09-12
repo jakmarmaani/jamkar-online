@@ -47,8 +47,16 @@ function moveSafetyToParent(){
  modal.insertBefore(box,modal.querySelector('.accountGrid'));
 }
 
+async function applyPublicSettings(){
+ const backend=window.JamKarBackend;for(let i=0;i<40&&!backend?.state?.client;i++)await new Promise(r=>setTimeout(r,100));if(!backend?.state?.client)return;
+ const {data,error}=await backend.state.client.rpc('get_public_settings');if(error||!data)return;
+ let bar=$('.siteAnnouncement');if(data.announcement){if(!bar){bar=document.createElement('div');bar.className='siteAnnouncement';document.body.prepend(bar)}bar.textContent='✨ '+data.announcement}else bar?.remove();
+ const isAdmin=(backend.state.user?.email||'').toLowerCase()===ADMIN_EMAIL;
+ if(data.maintenance_mode&&!isAdmin){let gate=$('.maintenanceGate');if(!gate){gate=document.createElement('div');gate.className='maintenanceGate';gate.innerHTML='<div><div class="maintenanceIcon">🛠️</div><h2>JamKar is getting an upgrade</h2><p>We are making the worlds even better. Please come back shortly.</p></div>';document.body.appendChild(gate)}}else $('.maintenanceGate')?.remove();
+}
+
 function watchWorld(){const modal=$('#worldModal');if(!modal)return;new MutationObserver(()=>applyGameTheme()).observe(modal,{attributes:true,attributeFilter:['class'],subtree:false});new MutationObserver(()=>applyGameTheme()).observe($('#worldTitle'),{childList:true,subtree:true});applyGameTheme()}
 
-function init(){improveHomeCopy();removeSafetyFromMain();moveSafetyToParent();music();adminShortcut();keepChildSession();watchWorld();}
+function init(){improveHomeCopy();removeSafetyFromMain();moveSafetyToParent();music();adminShortcut();keepChildSession();watchWorld();applyPublicSettings().catch(console.error);window.addEventListener('jamkar:auth',()=>applyPublicSettings().catch(console.error));window.addEventListener('jamkar:backend',()=>applyPublicSettings().catch(console.error));}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
