@@ -5,13 +5,7 @@ const required=['supabaseUrl','supabaseKey'];
 function ready(){return required.every(k=>typeof cfg[k]==='string'&&cfg[k].trim())&&window.supabase?.createClient}
 function emit(name,detail={}){window.dispatchEvent(new CustomEvent('jamkar:'+name,{detail}))}
 async function refreshUser(){if(!state.client){state.user=null;return null}const {data,error}=await state.client.auth.getUser();if(error&&error.name!=='AuthSessionMissingError')throw error;state.user=data?.user||null;return state.user}
-async function init(){
- if(!ready()){emit('backend',{mode:'demo'});return state}
- state.client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
- await refreshUser();state.mode='supabase';
- state.client.auth.onAuthStateChange((_event,session)=>{state.user=session?.user||null;emit('auth',{user:state.user})});
- emit('backend',{mode:'supabase',user:state.user});return state
-}
+async function init(){if(!ready()){emit('backend',{mode:'demo'});return state}state.client=window.supabase.createClient(cfg.supabaseUrl,cfg.supabaseKey,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});await refreshUser();state.mode='supabase';state.client.auth.onAuthStateChange((_event,session)=>{state.user=session?.user||null;emit('auth',{user:state.user})});emit('backend',{mode:'supabase',user:state.user});return state}
 async function signUp(email,password){if(!state.client)throw new Error('Backend is not configured yet.');return state.client.auth.signUp({email,password,options:{emailRedirectTo:location.origin}})}
 async function signIn(email,password){if(!state.client)throw new Error('Backend is not configured yet.');return state.client.auth.signInWithPassword({email,password})}
 async function signOut(){if(!state.client)return;await state.client.auth.signOut();state.user=null;emit('auth',{user:null})}
@@ -23,6 +17,7 @@ async function saveProgress(childId,worldKey,highestLevel,stars=0){if(!state.cli
 async function loadAchievements(childId){if(!state.client)return[];const {data,error}=await state.client.from('child_achievements').select('achievement_key,earned_at').eq('child_profile_id',childId).order('earned_at');if(error)throw error;return data||[]}
 async function saveAchievement(childId,key){if(!state.client)throw new Error('Backend is not configured yet.');const {data,error}=await state.client.from('child_achievements').upsert({child_profile_id:childId,achievement_key:key},{onConflict:'child_profile_id,achievement_key'}).select().single();if(error)throw error;return data}
 async function entitlement(){if(!state.client||!state.user)return false;const {data,error}=await state.client.from('parent_accounts').select('lifetime_unlocked').eq('user_id',state.user.id).maybeSingle();if(error)throw error;return !!data?.lifetime_unlocked}
-window.JamKarBackend={state,init,refreshUser,signUp,signIn,signOut,getFamily,saveChild,deleteChild,loadProgress,saveProgress,loadAchievements,saveAchievement,entitlement};
+async function createCheckout(){if(!state.client||!state.user)throw new Error('Please sign in to the parent account first.');const {data,error}=await state.client.functions.invoke('create-revolut-order',{body:{}});if(error)throw error;if(data?.error)throw new Error(data.error);return data}
+window.JamKarBackend={state,init,refreshUser,signUp,signIn,signOut,getFamily,saveChild,deleteChild,loadProgress,saveProgress,loadAchievements,saveAchievement,entitlement,createCheckout};
 init().catch(err=>{console.error('JamKar backend init failed',err);emit('backend-error',{message:err.message})});
 })();
