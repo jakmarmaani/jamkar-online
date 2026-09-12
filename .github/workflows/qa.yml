@@ -22,6 +22,8 @@ jobs:
           node --check expanded-games.js
           node --check persistent-builder.js
           node --check more-worlds.js
+          node --check advanced-games.js
+          node --check advanced-free-worlds.js
           node --check dashboard.js
           node --check account.js
           node --check auth-recovery.js
