@@ -17,7 +17,7 @@ ok('Password recovery remains wired',/resetPasswordForEmail/.test(backend)&&/PAS
 ok('Admin remains separate and protected',adminHtml.includes('JamKar Admin')&&/admin_get_overview/.test(admin)&&/mohamed\.a\.elmonim@gmail\.com/.test(admin));
 ok('Only consolidated frontend stylesheet is loaded for main game UI',index.includes('jamkar.css')&&!index.includes('experience-v2.css')&&!index.includes('adventure-runtime.css')&&!index.includes('immersive-game.css')&&!index.includes('webgl-environments.css'));
 ok('Deprecated game presentation scripts are no longer loaded',!index.includes('free-games.js')&&!index.includes('expanded-games.js')&&!index.includes('more-worlds.js')&&!index.includes('adventure-runtime.js')&&!index.includes('experience-v2.js')&&!index.includes('world-navigation.js')&&!index.includes('webgl-environments.js')&&!index.includes('webgl-characters.js')&&!index.includes('game-feel.js'));
-ok('One runtime owns level start',index.includes('<script src="app.js"></script>')&&/function startLevel\(n\)/.test(app));
+ok('One runtime owns level start',/<script src="app\.js(?:\?v=[^"]+)?"><\/script>/.test(index)&&/function startLevel\(n\)/.test(app));
 ok('Full-screen game shell exists',css.includes('100dvh')&&css.includes('.worldModalCard'));
 ok('Playable canvas runtime exists',/jkGameWorld/.test(app)&&/jkGameCanvas/.test(app)&&/requestAnimationFrame\(drawLoop\)/.test(app));
 ok('Keyboard and touch movement exist',/arrowup/.test(app)&&/data-dir/.test(app)&&/pointerdown/.test(app));
