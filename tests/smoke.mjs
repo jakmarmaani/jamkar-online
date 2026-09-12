@@ -32,6 +32,7 @@ ok('Exactly 5 free worlds',freeWorlds.length===5);
 ok('Level grid contains 30 levels',/Array\.from\(\{length:30\}/.test(app));
 ok('Free trial locks after Level 3',/!state\.paid&&n>3/.test(app));
 ok('Paid-only worlds route to unlock',/!state\.paid&&!w\.free/.test(app)&&/openAccount\('unlock'\)/.test(app));
+ok('App starts unpaid and contains no local paid entitlement',/const state=\{paid:false/.test(app)&&!app.includes("localStorage.getItem('jamkar_paid')")&&!app.includes("localStorage.setItem('jamkar_paid'"));
 ok('Browser paid flag removed in production sync',/removeItem\('jamkar_paid'\)/.test(cloud));
 ok('Lifetime entitlement comes from Supabase family account',/lifetime_unlocked/.test(cloud));
 ok('Revolut checkout invoked through backend',/backend\.createCheckout\(\)/.test(cloud));
