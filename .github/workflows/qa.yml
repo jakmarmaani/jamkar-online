@@ -19,6 +19,7 @@ jobs:
           node --check app.js
           node --check enhancements.js
           node --check free-games.js
+          node --check expanded-games.js
           node --check dashboard.js
           node --check account.js
           node --check backend.js
