@@ -21,7 +21,8 @@ Last reviewed: 12 September 2026
 - [x] World-specific 3D characters including explorer, diver, astronaut, robot and builder.
 - [x] Keyboard/touch 3D exploration in supported worlds.
 - [x] Three educational landmark missions in each supported 3D world.
-- [x] Mission completion persists per child profile on the device and visibly changes the 3D scene.
+- [x] 3D mission completion persists per child profile, syncs through the signed-in family account and visibly changes the 3D scene.
+- [x] Achievements sync through the signed-in child profile.
 - [x] Achievements, level milestones, XP, stars, streaks, badges and evolving companion progression.
 - [x] Reduced-motion support and keyboard-accessible game controls where applicable.
 
@@ -50,6 +51,7 @@ Last reviewed: 12 September 2026
 - [x] Static product/security invariant smoke tests.
 - [x] Headless Chromium desktop runtime smoke tests.
 - [x] Headless Chromium mobile viewport/runtime checks.
+- [x] Browser QA verifies Level 4 is locked, paid worlds cannot open without verified entitlement, and a forged legacy browser paid flag does not unlock access.
 - [x] GitHub Pages deployment automation.
 - [ ] Manual Safari/iOS/Android device testing is not automated in this repository.
 
