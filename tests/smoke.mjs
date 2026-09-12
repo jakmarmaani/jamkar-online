@@ -5,6 +5,7 @@ const app=read('app.js');
 const index=read('index.html');
 const free=read('free-games.js');
 const extras=read('enhancements.js');
+const completion=read('completion-api.js');
 const expanded=read('expanded-games.js');
 const builder=read('persistent-builder.js');
 const recovery=read('auth-recovery.js');
@@ -14,6 +15,9 @@ const account=read('account.js');
 const polish=read('ui-polish.js');
 const more=read('more-worlds.js');
 const progression=read('progression.js');
+const navigation=read('world-navigation.js');
+const environments=read('webgl-environments.js');
+const characters=read('webgl-characters.js');
 
 const checks=[];
 const ok=(name,cond)=>checks.push({name,cond:!!cond});
@@ -34,6 +38,7 @@ ok('Revolut checkout invoked through backend',/backend\.createCheckout\(\)/.test
 ok('Parent password minimum is 8',/minlength="8"/.test(account)&&/pass\.length<8/.test(account));
 ok('Parent sign out implemented',/parentSignOut/.test(account)&&/backend\.signOut\(\)/.test(account));
 ok('Password recovery implemented',/resetPasswordForEmail/.test(backend)&&/PASSWORD_RECOVERY/.test(recovery)&&/updatePassword/.test(backend));
+ok('Password recovery hides while signed in',/forgot\.hidden=!!backend\.state\?\.user/.test(recovery));
 ok('Two child profile fields only',index.includes('Child profile 1')&&index.includes('Child profile 2')&&!index.includes('Child profile 3'));
 ok('No public chat safety copy present',index.includes('No public chat'));
 ok('Privacy and terms links present',index.includes('legal.html#privacy')&&index.includes('legal.html#terms'));
@@ -43,7 +48,10 @@ ok('Remaining paid worlds have dynamic challenges',['Future City','Word Quest','
 ok('Eight additional worlds have dedicated gameplay',['Music Makers','Art Studio','Weather Watch','Engineering Bay','Language Lab','Mystery Maze','Garden Guardians','Robot Factory'].every(n=>more.includes(n)));
 ok('Persistent builder spans six eras',['prehistoric','settlement','ancient','industrial','modern','future'].every(e=>builder.includes(`key:'${e}'`)));
 ok('Persistent builder syncs to backend',/loadWorldBuild/.test(builder)&&/saveWorldBuild/.test(builder)&&/world_builds/.test(backend));
+ok('Persistent builder has civilisation needs',/civStats/.test(builder)&&/Era mission/.test(builder)&&/Robotics/.test(builder)&&/Solar/.test(builder));
 ok('Persistent builder and recovery scripts loaded',index.includes('persistent-builder.js')&&index.includes('auth-recovery.js'));
+ok('Shared completion API loaded before builder',index.indexOf('completion-api.js')>index.indexOf('enhancements.js')&&index.indexOf('completion-api.js')<index.indexOf('persistent-builder.js'));
+ok('Shared completion handles milestones and world mastery',/JamKarCompleteLevel/.test(completion)&&/World Master/.test(completion)&&/Level 20 Pathfinder/.test(completion));
 ok('Progression system loaded',index.includes('progression.js')&&index.includes('progression.css'));
 ok('Progression has six mastery tiers',['Explorer','Adventurer','Pathfinder','Master','Champion','Legend'].every(x=>progression.includes(`name:'${x}'`)));
 ok('Progression awards XP stars streaks badges',/prog\.xp\+=/.test(progression)&&/prog\.stars\+=/.test(progression)&&/prog\.streak=/.test(progression)&&/addBadge/.test(progression));
@@ -51,6 +59,10 @@ ok('Companion evolution implemented',['Spark Egg','Spark Cub','Quest Buddy','Sta
 ok('Expanded challenges loaded after free game layer',index.indexOf('expanded-games.js')>index.indexOf('free-games.js'));
 ok('Mobile/kid navigation polish loaded',index.includes('ui-polish.js')&&index.includes('polish.css'));
 ok('Create/My Worlds navigation wired',polish.includes('openBuilder')&&polish.includes('openMyWorlds'));
+ok('Native WebGL world and characters loaded',index.includes('webgl-world.js')&&index.includes('webgl-characters.js')&&/getContext\('webgl'/.test(characters));
+ok('Interactive 3D navigation loaded',index.includes('world-navigation.js')&&/JamKar3DPlayer/.test(navigation)&&/WASD/.test(navigation));
+ok('3D landmark missions persist per child profile',/jamkar_3dmissions_/.test(navigation)&&/JamKar3DWorldState/.test(navigation));
+ok('Completed missions visibly alter environments',/jamkar:worldstate/.test(environments)&&/done\(0\)/.test(environments)&&/done\(2\)/.test(environments));
 ok('Reduced-motion accessibility supported',read('polish.css').includes('prefers-reduced-motion')&&read('progression.css').includes('prefers-reduced-motion'));
 ok('Supabase client library pinned',/@supabase\/supabase-js@2\.112\.4/.test(index));
 
