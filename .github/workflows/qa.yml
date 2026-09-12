@@ -36,6 +36,7 @@ jobs:
           node --check admin.js
           node --check game-feel.js
           node --check arcade-feel.js
+          node --check adventure-runtime.js
           node --check webgl-world.js
           node --check world-navigation.js
           node --check webgl-environments.js
