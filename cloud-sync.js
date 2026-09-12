@@ -2,10 +2,20 @@
 const backend=window.JamKarBackend;if(!backend)return;
 let family=null;
 const configured=()=>backend.state.mode==='supabase'&&backend.state.client;
+
+// Never trust a browser/local demo flag for paid access. Until Supabase confirms
+// the entitlement, always render the account as unpaid.
+state.paid=false;
+try{localStorage.removeItem('jamkar_paid')}catch{}
+renderStats();renderWorlds();
+const initialPay=document.querySelector('#paySection');if(initialPay)initialPay.style.display='block';
+const initialCheckout=document.querySelector('#demoUnlock');if(initialCheckout){initialCheckout.textContent='Sign in to unlock securely with Revolut — £4.99';initialCheckout.disabled=false;}
+const initialReset=document.querySelector('#resetDemo');if(initialReset)initialReset.style.display='none';
+
 function currentChild(){return family?.children?.find(c=>c.username===state.activeProfile)||family?.children?.[0]||null}
 async function pullCloud(){
  if(!configured())return;
- if(!backend.state.user){state.paid=false;renderStats();renderWorlds();return}
+ if(!backend.state.user){state.paid=false;renderStats();renderWorlds();const pay=document.querySelector('#paySection');if(pay)pay.style.display='block';return}
  family=await backend.getFamily();
  state.paid=!!family?.account?.lifetime_unlocked;
  const names=(family?.children||[]).map(c=>c.username);
