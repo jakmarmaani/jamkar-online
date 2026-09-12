@@ -3,8 +3,9 @@ body.game-open{overflow:hidden}
 #worldModal{padding:0;background:rgba(22,47,72,.28);backdrop-filter:blur(18px)}
 #worldModal.open{display:block}
 #worldModal .modalCard{width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;border:0;border-radius:0;padding:0;overflow:hidden;display:grid;grid-template-rows:auto auto minmax(0,1fr);background:#f8fdff;box-shadow:none}
-#worldModal .modalHead{padding:12px 20px;min-height:72px;align-items:center;background:rgba(255,255,255,.96);border-bottom:1px solid #d9e9f3;box-shadow:0 7px 22px rgba(38,79,116,.08);z-index:20}
-#worldModal .modalHead>div{display:flex;align-items:center;gap:14px;min-width:0}
+#worldModal .modalHead{padding:10px 16px;min-height:72px;align-items:center;background:rgba(255,255,255,.96);border-bottom:1px solid #d9e9f3;box-shadow:0 7px 22px rgba(38,79,116,.08);z-index:20;display:flex;gap:12px}
+.worldBack{display:inline-flex;align-items:center;gap:7px;border:1px solid #d5e6f0;background:#fff;color:#1e4a73;border-radius:16px;padding:10px 14px;font-weight:950;cursor:pointer;box-shadow:0 5px 12px rgba(45,82,111,.08)}.worldBack:hover{transform:translateX(-2px);background:#f2faff}.worldBack:active{transform:translateX(-3px) scale(.98)}
+#worldModal .modalHead>div{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
 #worldModal .modalHead .eyebrow{margin:0;white-space:nowrap;background:#fff5c8;color:#6d5700;border-color:#ffe69b}
 #worldModal .modalHead h2{font-size:clamp(1.15rem,2.5vw,1.8rem);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #worldModal .close{flex:0 0 auto;width:46px;height:46px;background:#eef5fa;color:#355b78;border:1px solid #d8e5ed;box-shadow:0 5px 12px rgba(45,82,111,.08)}
@@ -15,7 +16,7 @@ body.game-open{overflow:hidden}
 #worldModal .level.done{background:#eafff1;border-color:#a9e7c1;box-shadow:0 4px 0 #bde7ca;color:#16724a}
 #worldModal .level.current,#worldModal .level.playing{background:linear-gradient(145deg,#daf3ff,#ecfbff);border-color:#62c9f6;box-shadow:0 4px 0 #9ddcf2,0 0 0 3px rgba(81,200,244,.14);transform:translateY(-1px)}
 #worldModal .level.locked{opacity:.55;background:#f2f5f6;color:#9aa8b3;box-shadow:0 4px 0 #e5eaed}
-#worldModal .gameStage{margin:0;border:0;border-radius:0;min-height:0;height:100%;overflow:auto;padding:clamp(14px,2vw,26px);display:grid;place-items:stretch;text-align:left;box-shadow:none;background:linear-gradient(180deg,#eefcff,#fffdf3);position:relative;isolation:isolate}
+#worldModal .gameStage{margin:0;border:0;border-radius:0;min-height:0;height:100%;overflow:hidden;padding:clamp(14px,2vw,26px);display:grid;place-items:stretch;text-align:left;box-shadow:none;background:linear-gradient(180deg,#eefcff,#fffdf3);position:relative;isolation:isolate}
 #worldModal .gameStage:before{content:"";position:absolute;inset:0;pointer-events:none;z-index:-3;background:radial-gradient(circle at 10% 12%,rgba(255,255,255,.95) 0 5%,transparent 5.5%),radial-gradient(circle at 85% 14%,rgba(255,255,255,.9) 0 4%,transparent 4.5%),linear-gradient(180deg,rgba(255,255,255,.16),transparent 60%)}
 #worldModal .gameStage[data-world-theme="dino"]{background:linear-gradient(180deg,#dfffbf 0,#b5ef89 48%,#78bc64 100%)}
 #worldModal .gameStage[data-world-theme="ocean"]{background:linear-gradient(180deg,#dffbff 0,#91e7f2 44%,#4ab7d0 100%)}
@@ -35,24 +36,9 @@ body.game-open{overflow:hidden}
 #worldModal .choice.correct{background:#dff9e9;border-color:#8ad3a7;color:#176847}
 #worldModal .choice.wrong{background:#fff0f1;border-color:#eca2aa;color:#8a3341}
 #worldModal #feedback{font-size:13px;text-align:center;color:#67809a;margin:17px 0 0}
-/* Hide the primitive floating block character/environment layer; keep gameplay clean and integrated. */
 #worldModal .game3dCanvas,#worldModal .world3dCanvas,#worldModal .worldNav3d{display:none!important}
 #worldModal .gameStage>.miniGame,#worldModal .gameStage>.persistentBuilder,#worldModal .gameStage>.victory{padding-right:clamp(18px,3vw,34px)!important}
-/* Home hero uses the friendlier mascot scene instead of the primitive cube hero. */
-.planetArt:after{display:none!important}.planetArt .jamkar3d{display:none!important}
-.planetArt .mascotScene{display:grid!important}
-/* Make home feel like a game launcher rather than a dashboard. */
+.planetArt:after{display:none!important}.planetArt .jamkar3d{display:none!important}.planetArt .mascotScene{display:grid!important}
 .hero{min-height:460px}.hero p{max-width:620px}.stats{opacity:.9}.worldCard{will-change:transform}.worldVisual{min-height:190px}.worldVisual span{font-size:88px}
-@media(max-width:760px){
- #worldModal .modalHead{padding:9px 12px;min-height:62px}
- #worldModal .modalHead .eyebrow{display:none}
- #worldModal .levelGrid{padding:8px 10px;gap:7px}
- #worldModal .level{flex-basis:52px;width:52px;height:48px;border-radius:14px}
- #worldModal .gameStage{padding:10px}
- #worldModal .gameMission,#worldModal .miniGame,#worldModal .persistentBuilder,#worldModal .victory{border-radius:22px;padding:16px!important}
- #worldModal .choices{grid-template-columns:1fr;gap:10px}
- #worldModal .choice{min-height:54px}
- #worldModal .missionHero{font-size:74px}
- .hero{min-height:auto}
-}
+@media(max-width:760px){#worldModal .modalHead{padding:8px 10px;min-height:62px}.worldBack{padding:9px 11px;border-radius:14px}.worldBack span{display:none}#worldModal .modalHead .eyebrow{display:none}#worldModal .levelGrid{padding:8px 10px;gap:7px}#worldModal .level{flex-basis:52px;width:52px;height:48px;border-radius:14px}#worldModal .gameStage{padding:10px}#worldModal .gameMission,#worldModal .miniGame,#worldModal .persistentBuilder,#worldModal .victory{border-radius:22px;padding:16px!important}#worldModal .choices{grid-template-columns:1fr;gap:10px}#worldModal .choice{min-height:54px}#worldModal .missionHero{font-size:74px}.hero{min-height:auto}}
 @media(prefers-reduced-motion:reduce){#worldModal .missionHero{animation:none!important}.worldCard{animation:none!important}}
