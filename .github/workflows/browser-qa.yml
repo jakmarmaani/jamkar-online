@@ -7,6 +7,10 @@ permissions:
   contents: read
 jobs:
   browser-smoke:
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -16,11 +20,13 @@ jobs:
       - name: Install Playwright
         run: |
           npm install --no-save playwright@1.55.0
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps ${{ matrix.browser }}
       - name: Start static site
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/jamkar-http.log 2>&1 &
           echo $! > /tmp/jamkar-http.pid
           sleep 2
       - name: Run browser smoke
+        env:
+          BROWSER: ${{ matrix.browser }}
         run: node tests/browser-smoke.mjs
